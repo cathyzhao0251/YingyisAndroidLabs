@@ -1,5 +1,8 @@
 package algonquin.cst2335.zhao0251.ui;
 
+import static android.opengl.ETC1.getHeight;
+import static android.opengl.ETC1.getWidth;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -9,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 } );
 
         variableBinding.theImageBtn.setOnClickListener( clk -> {
-            variableBinding.theTextView.setText("You click the image");
+           variableBinding.theTextView.setText( "You click the image");
         });
 
         vModel.onOrOff.observe(this, newValue ->{
