@@ -48,12 +48,15 @@ public class MainActivity extends AppCompatActivity {
                     vModel.onOrOff.postValue(onOrOff);
                 } );
 
-        variableBinding.theImageBtn.setOnClickListener( clk -> {  });
+        variableBinding.theImageBtn.setOnClickListener( clk -> {
+            variableBinding.theTextView.setText("You click the image");
+        });
 
         vModel.onOrOff.observe(this, newValue ->{
             variableBinding.theCheckbox.setChecked(newValue);
             variableBinding.theSwitch.setChecked(newValue);
             variableBinding.theRadioBtn.setChecked(newValue);
+
 
         });
 
@@ -71,5 +74,7 @@ public class MainActivity extends AppCompatActivity {
             vModel.userString.postValue(et.getText().toString());
 
         });
+
+
     }
 }

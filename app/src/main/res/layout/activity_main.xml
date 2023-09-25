@@ -43,15 +43,21 @@
         android:id="@+id/theSwitch" />
 
     <RadioButton
-        android:text="I'm a radion button"
+        android:text="I'm a radio button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/theRadioBtn" />
+
+    <ImageView
+        android:src="@drawable/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <ImageButton
         android:id="@+id/theImageBtn"
         android:src="@drawable/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
 
 </LinearLayout>
