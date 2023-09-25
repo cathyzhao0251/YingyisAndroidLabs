@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import algonquin.cst2335.zhao0251.data.MainViewModel;
 import algonquin.cst2335.zhao0251.databinding.ActivityMainBinding;
@@ -53,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
                 } );
 
         variableBinding.theImageBtn.setOnClickListener( clk -> {
-           variableBinding.theTextView.setText( "You click the image");
-        });
+            Toast.makeText(this,"The width = " + clk.getWidth() + " and height = " + clk.getHeight(),Toast.LENGTH_SHORT).show();
+             });
 
         vModel.onOrOff.observe(this, newValue ->{
             variableBinding.theCheckbox.setChecked(newValue);
             variableBinding.theSwitch.setChecked(newValue);
             variableBinding.theRadioBtn.setChecked(newValue);
-
+            Toast.makeText(this, "The value is now:" + newValue, Toast.LENGTH_SHORT).show();
 
         });
 
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         et.setText(vModel.userString.getValue());
         vModel.userString.observe(this,
                 (s) ->{
-            b.setText("Your text is now: " + s);
+            b.setText("click me " + s);
             tv.setText("Your text is now: " + s);
         });
 
