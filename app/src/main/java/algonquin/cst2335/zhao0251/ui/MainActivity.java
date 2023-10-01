@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         et.setText(vModel.userString.getValue());
         vModel.userString.observe(this,
                 (s) ->{
-            b.setText("click me " + s);
+            b.setText("Your text is now " + s);
             tv.setText("Your text is now: " + s);
         });
 
