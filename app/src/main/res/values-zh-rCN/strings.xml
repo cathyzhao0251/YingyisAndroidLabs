@@ -2,5 +2,8 @@
 <resources>
     <string name="app_name">Yingyi\'s Android Labs</string>
     <string name="hello_message">你好，世界！</string>
-    <string name="button_message">我是一个按钮</string>
+    <string name="button1">按钮1</string>
+    <string name="button2">按钮2</string>
+    <string name="button3">按钮3</string>
+    <string name="spin_message">旋转旗</string>
 </resources>
