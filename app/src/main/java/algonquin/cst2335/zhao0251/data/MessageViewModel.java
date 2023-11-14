@@ -7,4 +7,5 @@ import java.util.ArrayList;
 
 public class MessageViewModel extends ViewModel {
     public MutableLiveData<ArrayList<ChatMessage>> theMessages = new MutableLiveData<>();
+    public MutableLiveData<ChatMessage> selectedmessages = new MutableLiveData< >();
 }

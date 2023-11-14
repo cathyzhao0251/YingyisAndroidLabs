@@ -3,6 +3,8 @@ package algonquin.cst2335.zhao0251;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +26,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import algonquin.cst2335.zhao0251.data.ChatMessage;
+import algonquin.cst2335.zhao0251.ChatMessageDAO;
+import algonquin.cst2335.zhao0251.MessageDatabase;
+import algonquin.cst2335.zhao0251.data.MessageDetailsFragment;
+
 import algonquin.cst2335.zhao0251.data.MessageViewModel;
 import algonquin.cst2335.zhao0251.databinding.ActivityChatRoomBinding;
 import algonquin.cst2335.zhao0251.databinding.ReceiveRowBinding;
@@ -120,7 +126,7 @@ public class ChatRoom extends AppCompatActivity {
             @Override
             public int getItemViewType(int position) {
                 // determine which layout to load at row position
-                if (messages.get(position).isSentButton() == true) // for the first 5 rows
+                if (messages.get(position).getIsSentButton() == true) // for the first 5 rows
                 {
                     return 0;
                 } else return 1;
@@ -164,6 +170,15 @@ public class ChatRoom extends AppCompatActivity {
                 return messages.size();
             }
         });
+        chatModel.selectedmessages.observe(this, (newMessageValue) -> {
+
+            MessageDetailsFragment chatFragment = new MessageDetailsFragment(newMessageValue);
+            FragmentManager fMgr = getSupportFragmentManager();
+            FragmentTransaction tx = fMgr.beginTransaction();
+            tx.addToBackStack("");
+            tx.add(R.id.fragmentLocation, chatFragment);
+            tx.commit();
+        });
 
         binding.myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -180,8 +195,10 @@ public class ChatRoom extends AppCompatActivity {
                     clk -> {
 
                         int position = getAbsoluteAdapterPosition();
-                        ChatMessage toDelete = messages.get(position);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ChatRoom.this);
+                        ChatMessage clickedMessage = messages.get(position);
+                        chatModel.selectedmessages.postValue(clickedMessage);
+
+                        /*AlertDialog.Builder builder = new AlertDialog.Builder(ChatRoom.this);
                         builder.setMessage("Do you want to delete the message: " + messageText.getText())
                                 .setTitle("Question: ")
                                 .setPositiveButton("Yes", (dialog, cl) -> {
@@ -208,7 +225,7 @@ public class ChatRoom extends AppCompatActivity {
                                 })
                                 .setNegativeButton("No", (dialog, cl) -> {
                                 })
-                                .create().show();
+                                .create().show();*/
                     });
 
             messageText = itemView.findViewById(R.id.message);
