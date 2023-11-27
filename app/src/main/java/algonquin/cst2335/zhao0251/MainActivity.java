@@ -2,114 +2,121 @@ package algonquin.cst2335.zhao0251;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import algonquin.cst2335.zhao0251.databinding.ActivityMainBinding;
 
 /** This page is the first page of the application.
  * @author yingyi
  * @version 1.0
  */
 public class MainActivity extends AppCompatActivity {
-        /** This represents the string message at the top. */
-        private TextView tv = null;
-        /** This holds the text field to write password. */
-        private EditText et = null;
-        /** This holds the login button object. */
-        private Button btn = null;
-
-        /** This is the starting point for MainActivity
-         *
-         * @param savedInstanceState If the activity is being re-initialized after previously being shut
-         *                           down then this Bundle contains the data it most recently supplied
-         *                           in {@link #onSaveInstanceState}.     *
-         */
+    protected String cityName;
+    protected RequestQueue queue = null;
+    Bitmap image;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
 
-            tv = findViewById(R.id.textView);
-            et = findViewById(R.id.editText);
-            btn = findViewById(R.id.button);
+            queue = Volley.newRequestQueue(this);
+            ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
 
-            btn.setOnClickListener( clk -> {
-                String password = et.getText().toString();
+            setContentView(binding.getRoot());
 
-                checkPasswordComplexity(password);
-
-            });
-        }
-
-        /** This is function a string and returns true if it has meets the password requirements.
-         *
-         * @param pw The string object that we are checking
-         * @return  Returns true if pw meets password requirements.
-         */
-        private boolean checkPasswordComplexity(String pw){
-            boolean result = false;
-            boolean foundUpperCase = false, foundLowerCase = false, foundNumber = false,
-                    foundSpecial = false;
-
-
-            for (int i = 0; i < pw.length(); i++) {
-                char c = pw.charAt(i);
-                if (Character.isUpperCase(c)) {
-                    foundUpperCase = true;
-                } else if (Character.isLowerCase(c)) {
-                    foundLowerCase = true;
-                } else if (Character.isDigit(c)) {
-                    foundNumber = true;
-                } else if (isSpecialCharacter(c)) {
-                    foundSpecial = true;
+            binding.getForecast.setOnClickListener(click ->{
+                cityName = binding.editText.getText().toString();
+                String stringURL = null;
+                try {
+                    stringURL = new StringBuilder()
+                            .append("https://api.openweathermap.org/data/2.5/weather?q=")
+                            .append(URLEncoder.encode(cityName, "UTF-8"))
+                            .append("&appid=7e943c97096a9784391a981c4d878b22&units=metric").toString();
+                } catch(UnsupportedEncodingException e){
+                    e.printStackTrace();
                 }
-            }
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,(response)->{
+                    try{
+                        JSONObject coord = response.getJSONObject("coord");
+                        JSONArray weatherArray = response.getJSONArray("weather");
+                        JSONObject position0 = weatherArray.getJSONObject(0);
 
+                        String description = position0.getString("description");
+                        String iconName = position0.getString("icon");
 
-            if (!foundUpperCase) {
-                tv.setText("You are missing an upper case letter");
-                //Toast.makeText(this, "You are missing an upper case letter", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (!foundLowerCase) {
-                tv.setText("You are missing a lower case letter");
-                //Toast.makeText(this, "You are missing a lower case letter", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (!foundNumber) {
-                tv.setText("You are missing a number");
-                //Toast.makeText(this, "You are missing a number", Toast.LENGTH_SHORT).show();
-                return false;
-            } else if (!foundSpecial) {
-                tv.setText("You are missing a special character");
-                //Toast.makeText(this, "You are missing a special character", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            tv.setText("Password meets complexity requirements");
-            //Toast.makeText(this, "Password meets complexity requirements", Toast.LENGTH_SHORT).show();
-            return foundUpperCase && foundLowerCase && foundNumber && foundSpecial;
-        }
+                        JSONObject mainObject = response.getJSONObject("main");
+                        double current = mainObject.getDouble("temp");
+                        double min = mainObject.getDouble("temp_min");
+                        double max = mainObject.getDouble("temp_max");
+                        int humidity = mainObject.getInt("humidity");
 
-        /** Checks if the given character is a special character.
-         *
-         * @param c The character to be checked for special character status.
-         * @return true if the character is a special character, false otherwise.
-         */
-        private boolean isSpecialCharacter(char c) {
-            switch (c) {
-                case '#':
-                case '?':
-                case '$':
-                case '%':
-                case '^':
-                case '&':
-                case '*':
-                case '!':
-                case '@':
-                    return true;
-                default:
-                    return false;
-            }
+                        //String pathname = getFilesDir() + "/" + iconName + ".png";
+                        //File file = new File(pathname);
+                        //if(file.exists()){
+                       //     image = BitmapFactory.decodeFile(pathname);
+                       // }else{
+                        String imageUrl =  "http://openweathermap.org/img/w/" + iconName + ".png";
+                        ImageRequest imgReq = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+                                @Override
+                                public void onResponse(Bitmap bitmap) {
+                                    try{
+                                        image = bitmap;
+                                        image.compress(Bitmap.CompressFormat.PNG, 100,
+                                                MainActivity.this.openFileOutput(iconName + ".png", Activity.MODE_PRIVATE));
+                                        binding.icon.setImageBitmap(image);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } //end of onResponse
+                            }, 1024, 1024, ImageView.ScaleType.CENTER, null, (error) ->{
+                                //Toast.makeText(MainActivity.this, "" + error, Toast.LENGTH_SHORT).show();
+                            });
+                            queue.add(imgReq);
+                        //}//end of else
+                        runOnUiThread(()->{
+                            binding.temp.setText("The current temperature is " + current);
+                            binding.temp.setVisibility(View.VISIBLE);
+                            binding.minTemp.setText("The min temperature is " + min);
+                            binding.minTemp.setVisibility(View.VISIBLE);
+                            binding.maxTemp.setText("The max temperature is " + max);
+                            binding.maxTemp.setVisibility(View.VISIBLE);
+                            binding.humidity.setText("The humidity is " + humidity + "%");
+                            binding.humidity.setVisibility(View.VISIBLE);
+                            binding.icon.setImageBitmap(image);
+                            binding.icon.setVisibility(View.VISIBLE);
+                            binding.description.setText(description);
+                            binding.description.setVisibility(View.VISIBLE);
+                        });
+                    } catch (JSONException e){
+                        throw new RuntimeException(e);
+                    }
+                }, (error) ->{
+                });
+                queue.add(request);
+            });
         }
     }
